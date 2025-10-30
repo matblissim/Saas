@@ -26,22 +26,32 @@ export interface ParsedHandHistory {
 export function parseWinamaxHandHistory(content: string, fileName: string): ParsedHandHistory {
   const games: ParsedGame[] = [];
 
-  // Séparer les différentes mains
-  const hands = content.split(/\n\n+/).filter(h => h.trim());
+  // Chercher d'abord le Tournament summary
+  const summaryMatch = content.match(/Winamax Poker - Tournament summary[\s\S]*?(?=\n\n|$)/);
 
-  const seenGameIds = new Set<string>();
+  if (summaryMatch) {
+    // Si on trouve un summary, parser le tournoi complet
+    const game = parseTournamentSummary(summaryMatch[0], content);
+    if (game) {
+      games.push(game);
+    }
+  } else {
+    // Sinon, parser les mains individuellement (ancien format)
+    const hands = content.split(/\n\n+/).filter(h => h.trim());
+    const seenGameIds = new Set<string>();
 
-  for (const hand of hands) {
-    if (!hand.includes('Winamax Poker')) continue;
+    for (const hand of hands) {
+      if (!hand.includes('Winamax Poker')) continue;
 
-    try {
-      const gameData = parseHand(hand);
-      if (gameData && !seenGameIds.has(gameData.gameId)) {
-        games.push(gameData);
-        seenGameIds.add(gameData.gameId);
+      try {
+        const gameData = parseHand(hand);
+        if (gameData && !seenGameIds.has(gameData.gameId)) {
+          games.push(gameData);
+          seenGameIds.add(gameData.gameId);
+        }
+      } catch (error) {
+        console.error('Erreur lors du parsing d\'une main:', error);
       }
-    } catch (error) {
-      console.error('Erreur lors du parsing d\'une main:', error);
     }
   }
 
@@ -50,6 +60,84 @@ export function parseWinamaxHandHistory(content: string, fileName: string): Pars
     content,
     games
   };
+}
+
+/**
+ * Parse un Tournament summary complet
+ */
+function parseTournamentSummary(summary: string, fullContent: string): ParsedGame | null {
+  try {
+    // Extraire le nom du tournoi
+    // Winamax Poker - Tournament summary : Expresso Nitro(1009246096)
+    const tournamentMatch = summary.match(/Tournament summary\s*:\s*([^(]+)\((\d+)\)/);
+    const tableName = tournamentMatch ? tournamentMatch[1].trim() : 'Unknown';
+    const tournamentId = tournamentMatch ? tournamentMatch[2] : 'unknown';
+
+    // Extraire Buy-In : 0.93€ + 0.07€
+    const buyInMatch = summary.match(/Buy-In\s*:\s*([\d.]+)€\s*\+\s*([\d.]+)€/);
+    const buyIn = buyInMatch ? parseFloat(buyInMatch[1]) : 0;
+    const rake = buyInMatch ? parseFloat(buyInMatch[2]) : 0;
+
+    // Extraire le nombre de joueurs
+    const playersMatch = summary.match(/Registered players\s*:\s*(\d+)/);
+    const playersCount = playersMatch ? parseInt(playersMatch[1]) : 0;
+
+    // Extraire le prizepool
+    const prizepoolMatch = summary.match(/Prizepool\s*:\s*([\d.]+)€/);
+    const prizepool = prizepoolMatch ? parseFloat(prizepoolMatch[1]) : 0;
+
+    // Calculer le multiplicateur potentiel
+    // Multiplicateur = prizepool total / (buy-in sans rake × nombre de joueurs)
+    let multiplier: number | undefined;
+    if (buyIn > 0 && playersCount > 0) {
+      const totalBuyIn = buyIn * playersCount;
+      if (totalBuyIn > 0 && prizepool > 0) {
+        multiplier = Math.round((prizepool / totalBuyIn) * 10) / 10; // Arrondi à 1 décimale
+      }
+    }
+
+    // Extraire la position finale
+    const positionMatch = summary.match(/You finished in (\d+)(?:st|nd|rd|th) place/);
+    const position = positionMatch ? parseInt(positionMatch[1]) : undefined;
+
+    // Calculer le gain en fonction de la position (pour l'instant on ne l'a pas dans le summary)
+    // On pourrait chercher dans les dernières mains pour voir le stack final
+    let prize: number | undefined;
+
+    // Pour un Expresso 3-max standard :
+    if (position === 1 && prizepool > 0) {
+      prize = prizepool; // Le gagnant prend tout
+    }
+
+    // Extraire les dates
+    const startMatch = summary.match(/Tournament started (\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/);
+    let startTime = new Date();
+    if (startMatch) {
+      const [, year, month, day, hour, minute, second] = startMatch;
+      startTime = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}Z`);
+    }
+
+    // Chercher la première main pour avoir le HandId et le game type
+    const firstHandMatch = fullContent.match(/HandId:\s*#([\d\-]+).*?(Holdem|Omaha)\s+(no limit|pot limit|limit)/i);
+    const gameId = firstHandMatch ? firstHandMatch[1] : tournamentId;
+    const gameType = firstHandMatch ? `${firstHandMatch[2]} ${firstHandMatch[3]}` : 'Holdem no limit';
+
+    return {
+      gameId,
+      tableName,
+      gameType,
+      buyIn,
+      rake,
+      multiplier,
+      position,
+      prize,
+      startTime,
+      playersCount,
+    };
+  } catch (error) {
+    console.error('Erreur lors du parsing du tournament summary:', error);
+    return null;
+  }
 }
 
 function parseHand(hand: string): ParsedGame | null {
