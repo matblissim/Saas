@@ -1,0 +1,79 @@
+Winamax Poker - Tournament "Expresso" buyIn: 1€ rake: 0.05€ level: 0 - Prize Pool: 2€ (multiplier x2) - HandId: #1234-5678-9012-3456 - Holdem no limit (10/20) - 2024/01/15 20:00:00 UTC
+Table: 'Expresso(123456789)#001' 3-max (real money) Seat #1 is the button
+Seat 1: Player1 (1000)
+Seat 2: Player2 (1000)
+Seat 3: Player3 (1000)
+*** PRE-FLOP ***
+Player2 posts small blind 10
+Player3 posts big blind 20
+Dealt to Player1 [Ah Kh]
+Player1 raises 40 to 60
+Player2 folds
+Player3 calls 40
+*** FLOP *** [Ad 7s 2h]
+Player3 checks
+Player1 bets 80
+Player3 calls 80
+*** TURN *** [Ad 7s 2h][Kd]
+Player3 checks
+Player1 bets 160
+Player3 folds
+Player1 collected 290 from pot
+*** SUMMARY ***
+Total pot 290 | Rake 0
+You finished in 1st place and won 2.00€
+
+
+Winamax Poker - Tournament "Sunday Surprise" buyIn: 5€ + 0.50€ level: 5 - HandId: #9876-5432-1098-7654 - Holdem no limit (100/200) - 2024/01/15 21:30:00 UTC
+Table: 'Sunday Surprise(987654321)#023' 9-max (real money) Seat #5 is the button
+Seat 1: PlayerA (3000)
+Seat 3: PlayerB (4500)
+Seat 5: PlayerC (2800)
+Seat 7: PlayerD (3200)
+Seat 9: PlayerE (2500)
+*** PRE-FLOP ***
+PlayerD posts small blind 100
+PlayerE posts big blind 200
+Dealt to PlayerA [Qs Qh]
+PlayerA raises 400 to 600
+PlayerB folds
+PlayerC calls 600
+PlayerD folds
+PlayerE folds
+*** FLOP *** [2d 7c Qc]
+PlayerA bets 800
+PlayerC calls 800
+*** TURN *** [2d 7c Qc][3h]
+PlayerA bets 1600 and is all-in
+PlayerC folds
+PlayerA collected 3100 from pot
+*** SUMMARY ***
+Total pot 3100 | Rake 0
+
+
+Winamax Poker - Tournament "Expresso" buyIn: 2€ rake: 0.10€ level: 3 - Prize Pool: 100€ (multiplier x50) - HandId: #1111-2222-3333-4444 - Holdem no limit (50/100) - 2024/01/16 14:45:00 UTC
+Table: 'Expresso(555555555)#001' 3-max (real money) Seat #2 is the button
+Seat 1: Hero (2500)
+Seat 2: Villain1 (2000)
+Seat 3: Villain2 (1500)
+*** PRE-FLOP ***
+Villain2 posts small blind 50
+Hero posts big blind 100
+Dealt to Hero [As Ac]
+Villain1 raises 200 to 300
+Villain2 folds
+Hero raises 600 to 900
+Villain1 calls 600
+*** FLOP *** [9d 4h 2s]
+Hero bets 1600 and is all-in
+Villain1 calls 1100 and is all-in
+*** TURN *** [9d 4h 2s][7c]
+*** RIVER *** [9d 4h 2s 7c][Kh]
+*** SHOW DOWN ***
+Hero shows [As Ac] (One pair : Aces)
+Villain1 shows [Jh Jd] (One pair : Jacks)
+Hero collected 4050 from pot
+Villain1 finished the tournament
+*** SUMMARY ***
+Total pot 4050 | Rake 0
+You finished in 2nd place and won 60.00€

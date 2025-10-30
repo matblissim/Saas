@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+
+  // Informations de base
+  gameId        String   @unique
+  tableName     String
+  gameType      String
+  buyIn         Float
+  rake          Float
+
+  // Multiplicateur
+  multiplier    Float?
+
+  // Résultat
+  position      Int?
+  prize         Float?
+
+  // Dates
+  startTime     DateTime
+  endTime       DateTime?
+
+  // Informations supplémentaires
+  playersCount  Int
+  level         String?
+  blinds        String?
+
+  @@index([startTime])
+  @@index([gameType])
+}
+
+model HandHistory {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  fileName  String
+  content   String
+  parsed    Boolean  @default(false)
+
+  @@index([createdAt])
+}
